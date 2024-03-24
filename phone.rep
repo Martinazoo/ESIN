@@ -1,0 +1,9 @@
+/* 
+La classe phone conté les dades relatives a un telèfon: el número del telèfon, un nom
+(string) associat al número, i un comptador amb el nombre de vegades que s’ha trucat
+al telèfon. A aquest comptador se l’anomena indistintament comptador de trucades o
+comptador de freqüència. La classe també inclou un operador de comparació >.
+*/
+nat _numTelf;
+string _nomP; 
+nat _comptTruc;

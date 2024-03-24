@@ -1,0 +1,54 @@
+/* EXPLICACIÓ D'HAVER ESCOLLIT AQUESTA ESTRUCTURA DE DADES */
+/***********************************************************/
+/* Hem escollit com a estructura de dades la taula de dispersió,
+ja que en aquest cas, si la funcó hash es bona, no pot haver
+gaire colisions, i això fa que els accesos a la taula siguin
+molt eficients i ràpids. A més en el cas de que la taula es començi
+a emplenar o a buidar, la funcio redispersió redimensionarà la taula 
+per seguir fent els accesos gairebé directes, és a dir, constants.*/
+
+struct node_hash {
+    phone _ph;          // Clau
+    node_hash* _seg;    // Punter al seguent element de la llista
+    node_hash();        // Constructor buit
+    node_hash(const phone &p, node_hash *seg = nullptr); // Constructor per còpia
+};
+
+node_hash **_taula; // Taula amb punters a les llistes de sinònims
+nat _M;             // Mida de la taula
+nat _quants;        // Nº d’elements guardats al diccionari
+
+static long const MULT = 31415926;
+
+// Pre:  Cert
+// Post: Retorna l'index y de la hash table al que s'ha d'accedir depenent del numero x
+// Cost: Θ(1), és a dir, cost constant.
+static long hash_func(nat x); 
+
+// Pre: Cert
+// Post: S'ha eliminat tota la llista de phones a la que apunta p
+// Cost: Θ(1), és a dir, cost constant.
+static void esborra_nodes(node_hash *p);
+
+// Pre: Cert
+// Post: s'ha modificat la mida de la taula de c2, la seva mida serà M.
+// Cost: Θ(n), és a dir, cost lineal.
+static void modificar_mida_taula(call_registry &c2, nat M);
+
+// Pre:  Cert
+// Post: s'ha inserit el phone ph que no es troba a la hash table incrementant en 1 el
+// numero d'elements que hi ha a la taula.
+// Cost: Θ(n), és a dir, cost lineal.
+void insereix(const phone &ph);
+
+// Pre:  Cert
+// Post:  Retorna el factor de càrrega de la taula de dispersió, el factor càrrega depén de com
+// de plena es la nostra taula i de la seva grandària.
+// Cost: Θ(1), és a dir, cost constant.
+float factor_carrega();
+
+// Pre: Factor de càrrega > 0.8 o Factor de càrrega < 0.2
+// Post: s'ha redimensionat la mida de la taula de disersió a M2
+// depenent del factor de càrrega, amb tots els seus elements. 
+// Cost: Θ(n), és a dir, cost lineal.
+void redispersio(nat &M2);

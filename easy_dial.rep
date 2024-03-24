@@ -1,0 +1,173 @@
+/* EXPLICACIÓ D'HAVER ESCOLLIT AQUESTES ESTRUCTURES DE DADES */
+/*************************************************************/
+/* Hem escollit com a estructura de dades un TST, ja que es una bona estuctura de 
+dades per a aquest de clase, ja que un TST combina l'eficiència en a
+accés als subarbres i estalvi de memòria. D'aquesta manera com expliquem posteriorment,
+cada node_tst conté tres punters, un al subarbre esquerre, un al subarbre del centre i un al
+subarbre dret.
+
+També per fer més fàcil la implentació d'algunes funcions, com per exemple,
+anterior i num_telf hem decidit crear una llista doblement encadenada sense 
+fantasma i no circular.
+
+EL struct visita conté un phone i un boolean visitat, per a l'hora de saber
+quan ens trobem en un node, si està visitat o no.
+
+El struct node_tst conté un char, tres punters als fill esquerre, centre i dret i finalment
+un punter a una visita. Això serveix per saber les dades de la visita de forma directa una vegada
+trobat el node que volem. I ocupa menys memòria crear un punter a cada nodee_tst que una visita.
+Perquè la majoria dels nodes aquest punter estarà a nullptr.
+*/
+struct visita{
+    phone p;        // Un phone p
+    bool visitat;   // Bool visitat per saber si aquell node ja ha estat visitat
+    visita(){}      // Constructor de visita buit
+    visita(phone ph): p(ph), visitat(false){}   // Constructor de visita a partir d'un phone ph
+};
+//TST
+struct node_tst {
+    char _c;        // Símbol posició i-èssima de la clau
+    node_tst* _esq; // Fill esquerra, apunta a símbols mateixa posició formant un BST
+    node_tst* _cen; // Fill central, apunta a símbols següent posició
+    node_tst* _dre; // Fill dret, apunta a símbols mateixa posició formant un BST
+    visita* _pv;    // Un punter a visita.
+    node_tst();
+    node_tst(const char &c, node_tst* esq = nullptr, node_tst* cen = nullptr, node_tst* dre = nullptr):_c(c), _esq(esq), _cen(cen), _dre(dre){}
+};
+
+//LLISTA DOBLEMENT ENCADENADA
+class dobleList{
+private:
+    struct node_list{
+        node_tst* _act;                             // Punter al element actual del tst
+        visita* _v;                                 // Punter a una visita
+        node_list* _seg;                            // Punter al seguent element de la llista
+        node_list* _ant;                            // Punter al anterior element de la llista
+        node_list():_seg(nullptr), _ant(nullptr){} // Constructor del node de la llista
+    };
+
+    node_list* _ini;    // Punter al primer element de la llista
+    node_list* _fin;    // Punter al últim element de la llista
+    nat _quants;        // Indica el nombre d'elements a la llista
+
+public:
+    // Pre:  Cert
+    // Post: S'ha creat una doubleList buida
+    // Cost: Θ(1), és a dir, cost constant.
+    dobleList();
+
+    // Pre: Cert
+    // Post: s'ha modificar el paràmetre implícit que serà igual a L
+    // Cost: Θ(n), és a dir, cost lineal.
+    dobleList(const dobleList& L);
+
+    // Pre: Cert
+    // Post: s'ha modificar el paràmetre implícit que serà igual a L
+    // Cost: Θ(n), és a dir, cost lineal.
+    dobleList& operator=(const dobleList& L);
+
+    // Pre:  Cert
+    // Post:  S'ha esborrat tota la dobleList
+    // Cost: Θ(n), és a dir, cost lineal.
+    ~dobleList();
+
+    // Pre:  Cert
+    // Post:  S'ha insertat la visita visit a la dobleList
+    // Cost: Θ(1), és a dir, cost constant.
+    void insertInList(node_tst* pactual, visita* visit);
+    
+    // Pre:  Cert
+    // Post:  S'ha esobrrat l'últim element de la dobleList
+    // Cost: Θ(1), és a dir, cost constant.
+    void deleteInList();
+
+    // Pre: Cert
+    // Post: S'ha esborrat tota la llista dobleList del paràmetre implicit
+    // Cost: Θ(n), és a dir, cost lineal.
+    void reinicia();
+
+    // Pre:  Cert
+    // Post: Retorna un punter a l'últim element de la dobleList
+    // Cost: Θ(1), és a dir, cost constant.
+    node_list* getFin() const;
+
+    // Pre:  Cert
+    // Post: Retorna el nombre d'elements que hi ha a la dobleList
+    // Cost: Θ(1), és a dir, cost constant.      
+    nat getSize();
+};
+
+node_tst* _arrel;       // Punter a l'arrel del TST
+string _prefix;         // Prefix que tenim despres de fer seguent
+bool _indefinit;        // Boleà que indica si un phone es indefinit o no
+string _ultimResultat;  // String que guarda l'ultim resultat que s'ha mostrat 
+node_tst* _actual;      // Punter al node actual del TST
+visita* _pharray;       // Array de punters a visita
+dobleList _listNodes;   // Doble List que fa que els accesos a anterior siguin constants
+float _longitudM;       // Float que conté la longitud mitjana   
+int _size;
+
+// Pre:  Cert
+// Post: Retorna un punter que té la mateixa estructura (TST) que l'estructura (TST) que 
+// es apuntada per t
+static node_tst* copianode(node_tst *t);
+
+// Pre:  Cert
+// Post: s'han esborrat tots els nodes que són fills de t
+static void esborranodes(node_tst *t);
+
+// Pre:  Cert
+// Post: S'ha inserit alTST del parametre implicit el nom de la visita v
+// Cost: Θ(k.length() · log(#simbols))
+void insereix(visita &v);
+
+// Pre:  Cert
+/* Post: Insereix una paraula en el diccionari. Cal tenir
+  present que cal afegir un sentinella al final de la paraula que és \0. 
+  Retorna phone::ENDPREF.
+*/
+// Cost: Θ(k.length() · log(#simbols))
+static node_tst* insereix(node_tst *t, nat i, visita &v, const string &k);
+
+// Pre:  Cert
+// Post: insereix a result totes les paraules que hi ha en el subarbre n.
+// Cost: Θ(x.length() · log(#simbols))
+static void comencen_aux (node_tst *n, const string &pref, vector<string> &result) throw(error);
+
+// Pre:  Cert
+// Post: n apunta al node màxima frequència o a nullptr
+// Cost: Θ(h · x.length() · log(#simbols)), sent x el size de la paraula que volem trobar i h l'altura de l'arbre.
+void busca_max_freq(node_tst* &n, nat &max, const char &c);
+
+// Pre:  Cert
+// Post: paux apunta al phone de més frequència.
+// Cost: Θ(h · x.length() · log(#simbols)), sent x el size de la paraula que volem trobar i h l'altura de l'arbre. 
+void busca_max_freq_aux(node_tst* n, nat &max, node_tst* &paux);
+
+// Pre:  Cert
+// Post: retorna un vector on en cada posició té el numero de pulsacions que s'ha
+// de fer per a arribar a obtenir el nom de dum[i]. 
+// Cost: Θ(n · x.length() · log(#simbols))
+vector<nat> pulsacions(const vector<phone> &dum);
+
+// Pre:  Cert
+// Post: retorna un string que es el resultat de fer seguent passant-li el char x
+// on x es cada char de la paraula de la qual volem saber la seva pulsacio
+// Cost: Θ(x.length() · log(#simbols))
+string pulsacions_aux(const char &x, nat &j);
+
+
+//** MERGESORT **//
+/*****************/
+// Pre:  Cert
+// Post: el vector v de phones ordenat de major frequència a menor
+// Cost: Θ(n · log(n)), és a dir, cost quasi lineal.
+void ordena(vector <phone>& v, vector <phone> v1, vector <phone> v2);
+
+// Pre:  Cert
+// Post: el vector v de phones ordenat de major frequència a menor
+// Cost: Θ(n · log(n)), és a dir, cost quasi lineal.
+void ordena_per_fusio(vector<phone> &v);
+
+
+
